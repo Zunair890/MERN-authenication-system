@@ -13,8 +13,11 @@ connectDB();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({credentials:true}))
 
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow requests from your frontend
+    credentials: true, // Allow cookies and credentials
+  }));
 
 
 
@@ -28,3 +31,16 @@ app.get("/",(req,res)=>{
 app.listen(PORT,()=>{
     console.log(`App is running on port ${PORT}`)
 })
+
+// Middleware to check if the user is authenticated
+const isAuthenticated = (req, res, next) => {
+    if (req.session.userId) {
+      req.user = users.find(user => user.id === req.session.userId);
+      next();
+    } else {
+      res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+  };
+  
+
+ 
